@@ -6,10 +6,10 @@ TransactionShield's intended prediction moment is before a transaction is comple
 
 ## Column disposition
 
-### Safe candidate inputs
+### Availability-safe input and temporal context
 
-- `step`: known simulation event time. Use temporal validation; do not randomise across the full period.
 - `amount`: supplied with the transaction. Its simulator relationship to fraud still needs distribution and ablation checks.
+- `step`: known simulation event time and safe for temporal partitioning and point-in-time joins. Stage 3 excludes its absolute value as a direct MVP model feature because it has no portable production meaning.
 
 “Safe” here means plausibly available before the decision, not proven free of simulator artefacts.
 
@@ -45,7 +45,7 @@ Controls for later modelling:
 - report performance by transaction type;
 - compare models with and without `transactionType`;
 - never claim detection coverage for types with no positive examples; and
-- consider whether the prediction population should be transfers only, documenting the business consequence if so.
+- use the Stage 3 primary population contract, which scores transfers only while preserving all transaction types in the data layer.
 
 ### Post-balance arithmetic
 
@@ -79,17 +79,17 @@ Controls:
 
 Rows with at least one negative balance contain 6,170 fraud and 42,043 legitimate labels, a 12.797% fraud rate versus 10.203461% overall. This difference warrants investigation but is not evidence that negative balances directly encode fraud. Post-transaction negative balances remain excluded with the other new-balance fields.
 
-## Temporal split feasibility
+## Stage 2 temporal split feasibility
 
 The file is sorted non-decreasingly across 144 complete step values from 0 to 143. Fraud occurs in every step. A feasibility-only split on whole steps produces:
 
 | Window | Step range | Rows | Fraud | Fraud rate |
 |---|---:|---:|---:|---:|
-| Train candidate | 0–85 | 1,106,698 | 105,266 | 9.511719% |
-| Validation candidate | 86–114 | 254,762 | 35,200 | 13.816817% |
-| Test candidate | 115–143 | 358,721 | 35,052 | 9.771382% |
+| First 60% feasibility window | 0–85 | 1,106,698 | 105,266 | 9.511719% |
+| Next 20% feasibility window | 86–114 | 254,762 | 35,200 | 13.816817% |
+| Final 20% feasibility window | 115–143 | 358,721 | 35,052 | 9.771382% |
 
-This demonstrates that non-overlapping chronological windows are technically possible and that prevalence changes over time. These windows are not yet an approved modelling split. The 144-step file horizon also conflicts with the paper's reported 720-step configuration and limits conclusions about longer-term seasonality or drift.
+This Stage 2 full-dataset calculation demonstrated that non-overlapping chronological windows are technically possible and that prevalence changes over time. It is superseded for primary modelling by the frozen transfer-only Stage 3 split: train 0–95, validation 96–119, and test 120–143. The 144-step file horizon represents only six synthetic days, conflicts with the paper's reported 720-step configuration, and cannot demonstrate long-term seasonality or drift generalisation.
 
 ## Entity history and graph feasibility
 

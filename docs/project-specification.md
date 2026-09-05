@@ -24,7 +24,7 @@ No monetary costs are assigned at this stage. Any later cost-sensitive analysis 
 
 ## Evaluation principles
 
-Accuracy is inappropriate as a headline metric because fraud is the minority class and a model can achieve high accuracy by mostly predicting legitimate transactions. Evaluation will eventually include:
+The primary transfer population has moderate class imbalance. Accuracy is not the headline metric because operational fraud decisions have asymmetric false-positive and false-negative consequences, and the useful trade-off changes with the decision threshold. Evaluation will eventually include:
 
 - **area under the precision-recall curve (PR-AUC)** as the primary threshold-independent ranking metric;
 - **precision and recall at the chosen operating point**, including recall at a stated minimum precision or alert-volume limit;
@@ -34,11 +34,11 @@ Accuracy is inappropriate as a headline metric because fraud is the minority cla
 - **amount-weighted detection summaries** only after the meaning of the synthetic amount unit is verified, reported alongside count-based metrics; and
 - **inference latency and throughput** once an API exists.
 
-All model selection and threshold tuning must use time-aware validation. The final temporal test window must remain untouched until evaluation.
+All learned preprocessing and model parameters must be fitted from the training partition only. Model selection and threshold tuning must use time-aware validation, with threshold selection using validation data only. Final test labels must remain untouched until the final evaluation.
 
 ## MVP scope
 
-Authoritative artifact acquisition and pre-development auditing were completed in Stage 2. The remaining MVP capabilities below are planned, not yet implemented:
+Authoritative artifact acquisition and pre-development auditing were completed in Stage 2. Stage 3 froze the approved canonical schema, transfer-only scoring population, point-in-time feature contract, and evaluation design without installing a database or fitting a model. The remaining MVP capabilities below are planned, not yet implemented:
 
 - Load typed transactions into PostgreSQL with auditable data-quality checks.
 - Use SQL for profiling and analyst-oriented transaction summaries.
@@ -64,6 +64,6 @@ Authoritative artifact acquisition and pre-development auditing were completed i
 
 ## Current implementation boundary
 
-Implemented through Stage 2: repository foundation, project documentation, a paper-defined MoMTSim dataset-version-1 column contract, CSV header/row-shape validation, lazy string-row iteration, authoritative artifact acquisition, a reproducible streaming integrity/quality audit, a verified data dictionary, leakage review, temporal/entity feasibility analysis, and focused unit tests.
+Implemented through Stage 3: repository foundation, authoritative artifact acquisition and audit, a verified data dictionary, leakage review, a frozen lossless canonical schema design, a transfer-only population contract, point-in-time feature definitions, same-step-safe aggregation design, a frozen chronological evaluation split, lightweight contract-inspection code, and focused unit tests.
 
-Not implemented now: data cleaning, a typed production ingestion pipeline, database design or ingestion, production feature engineering, modelling, threshold selection, model persistence, API, dashboard, Docker, CI, orchestration, event streaming, or cloud resources.
+Not implemented now: data cleaning, a typed production ingestion pipeline, database installation or ingestion, production feature computation, modelling, threshold selection, model persistence, API, dashboard, Docker, CI, orchestration, event streaming, or cloud resources.

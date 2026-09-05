@@ -2,17 +2,18 @@
 
 TransactionShield is a portfolio project for building an explainable, production-style transaction risk decisioning system. It is deliberately structured as a software and data product rather than as a single fraud-classification notebook.
 
-## Current status: Stage 2 acquisition and audit only
+## Current status: Stage 3 contract design only
 
-Stage 1 established the project contract and repository conventions. Stage 2 adds:
+Stage 1 established the project contract and repository conventions. Stage 2 acquired and audited the canonical artifact. Stage 3 adds only design contracts:
 
-- a provenance record for the authoritative Mendeley repository Version 2 artifact;
-- an independently verified checksum, schema, row/class/type counts, and quality statistics;
-- a streaming, dependency-free audit utility with focused tests;
-- a column-level data dictionary and feature-availability assessment; and
-- documented quality, leakage, temporal, and entity-feasibility findings.
+- a frozen lossless canonical PostgreSQL schema design derived from verified source representation;
+- the transfer-only scoring-population contract;
+- core and platform-state feature tiers with explicit forbidden inputs;
+- a same-step-safe point-in-time history design;
+- a reproducible per-step transfer summary and frozen temporal evaluation contract; and
+- lightweight, tested eligibility, lineage-identity, representation, and summary utilities.
 
-The executable scope is limited to CSV header/row-shape validation, lazy string-row iteration, and the streaming audit utility. An authoritative raw CSV exists only in the Git-ignored local `data/raw/` directory and is not part of the repository. There is no typed production pipeline, trained model, database, API, dashboard, Docker configuration, CI workflow, or cloud infrastructure.
+The executable scope is limited to CSV validation/iteration, streaming audit, and Stage 3 contract inspection utilities. The PostgreSQL file is unexecuted design DDL. An authoritative raw CSV exists only in the Git-ignored local `data/raw/` directory and is not part of the repository. There is no production ingestion or feature pipeline, fitted model, installed database, API, dashboard, Docker configuration, CI workflow, or cloud infrastructure.
 
 The verified primary artifact is `synthetic_mobile_money_transaction_dataset.csv` from **Version 2 of the Mendeley Data repository**, DOI [`10.17632/zhj366m53p.2`](https://doi.org/10.17632/zhj366m53p.2). Its independently calculated row, class, transaction-type, and schema results identify it as **dataset version 1 defined by the 2025 Data in Brief paper**. These are separate version concepts. See [the original paper](https://doi.org/10.1016/j.dib.2025.111534), [provenance record](docs/data-provenance.md), and [dataset decision](docs/dataset-decision.md).
 
@@ -23,18 +24,26 @@ TransactionShield/
 |-- data/                         # Local data policy; raw/generated data are ignored
 |-- docs/
 |   |-- architecture.md          # Planned system and Stage 1 boundary
+|   |-- canonical-data-model.md  # Verified representation and approved SQL types
 |   |-- data-dictionary.md       # Verified schema, meanings, and availability
 |   |-- data-provenance.md       # Source, acquisition, checksum, and identity
 |   |-- data-quality-audit.md    # Integrity and quality findings
 |   |-- dataset-decision.md      # Dataset evidence, comparison, and recommendation
 |   |-- leakage-audit.md         # Feature disposition and temporal safeguards
-|   `-- project-specification.md # Business problem, metrics, and scope
+|   |-- model-contract.md        # Population, feature tiers, and leakage rules
+|   |-- project-specification.md # Business problem, metrics, and scope
+|   |-- temporal-evaluation-contract.md # Stability, split, and metrics
+|   `-- transfer-step-summary.csv        # Reproducible eligible-population counts
+|-- sql/
+|   `-- canonical_schema.sql     # Approved design; not executed
 |-- src/transactionshield/
 |   |-- __init__.py
 |   |-- audit.py                 # Streaming integrity and quality audit
+|   |-- contracts.py             # Stage 3 contract inspection and rules
 |   `-- ingestion.py             # Header validation and lazy CSV row iteration
 |-- tests/
 |   |-- test_audit.py
+|   |-- test_contracts.py
 |   `-- test_ingestion.py
 |-- .gitignore
 |-- LICENSE
@@ -53,7 +62,7 @@ python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
-The Stage 1 and Stage 2 code uses only the Python standard library. `pytest` is a development dependency used by the test suite.
+The code implemented through Stage 3 uses only the Python standard library. `pytest` is a development dependency used by the test suite.
 
 ## Stage 1 environment snapshot
 
@@ -81,8 +90,11 @@ TransactionShield's own source code and original project documentation are avail
 - [Project specification](docs/project-specification.md)
 - [Dataset decision](docs/dataset-decision.md)
 - [Architecture](docs/architecture.md)
+- [Canonical data model](docs/canonical-data-model.md)
 - [Data provenance and acquisition](docs/data-provenance.md)
 - [Verified data dictionary](docs/data-dictionary.md)
 - [Data-quality audit](docs/data-quality-audit.md)
 - [Leakage and feature-availability audit](docs/leakage-audit.md)
+- [Scoring and feature contract](docs/model-contract.md)
+- [Temporal evaluation contract](docs/temporal-evaluation-contract.md)
 - [Local data policy](data/README.md)

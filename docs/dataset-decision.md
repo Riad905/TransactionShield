@@ -1,6 +1,6 @@
 # Dataset decision record
 
-- **Status:** selected and empirically validated; Stage 2 changes awaiting approval
+- **Status:** canonical artifact approved; Stage 3 population and evaluation contracts frozen
 - **Decision date:** 5 September 2026
 - **Selected primary data:** `synthetic_mobile_money_transaction_dataset.csv`, empirically identified as MoMTSim paper-defined dataset version 1 within Mendeley Data repository Version 2
 
