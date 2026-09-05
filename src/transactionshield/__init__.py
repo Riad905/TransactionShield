@@ -1,4 +1,4 @@
-"""TransactionShield's small Stage 1 public interface."""
+"""TransactionShield package public interface."""
 
 from transactionshield.ingestion import (
     MOMTSIM_PAPER_DATASET_V1_COLUMNS,

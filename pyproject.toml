@@ -12,6 +12,9 @@ license = "MIT"
 license-files = ["LICENSE"]
 dependencies = []
 
+[project.scripts]
+transactionshield-audit = "transactionshield.audit:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8,<10",

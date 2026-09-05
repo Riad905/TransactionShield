@@ -36,9 +36,10 @@ Accuracy is inappropriate as a headline metric because fraud is the minority cla
 
 All model selection and threshold tuning must use time-aware validation. The final temporal test window must remain untouched until evaluation.
 
-## MVP scope (planned, not yet implemented)
+## MVP scope
 
-- Reproducibly acquire and validate the paper-defined MoMTSim dataset version 1 from the current Mendeley repository Version 2 release, without committing raw data.
+Authoritative artifact acquisition and pre-development auditing were completed in Stage 2. The remaining MVP capabilities below are planned, not yet implemented:
+
 - Load typed transactions into PostgreSQL with auditable data-quality checks.
 - Use SQL for profiling and analyst-oriented transaction summaries.
 - Build point-in-time-correct, explainable features from information available at decision time.
@@ -61,8 +62,8 @@ All model selection and threshold tuning must use time-aware validation. The fin
 - Cloud deployment and infrastructure as code.
 - Carefully scoped GenAI assistance only if it solves a real analyst workflow problem.
 
-## Stage 1 boundary
+## Current implementation boundary
 
-Implemented now: repository foundation, documentation, a paper-defined MoMTSim dataset-version-1 column contract, CSV header/row-shape validation, lazy string-row iteration, and unit tests.
+Implemented through Stage 2: repository foundation, project documentation, a paper-defined MoMTSim dataset-version-1 column contract, CSV header/row-shape validation, lazy string-row iteration, authoritative artifact acquisition, a reproducible streaming integrity/quality audit, a verified data dictionary, leakage review, temporal/entity feasibility analysis, and focused unit tests.
 
-Not implemented now: dataset acquisition, value/type validation, database ingestion, feature engineering, modelling, threshold selection, model persistence, API, dashboard, Docker, CI, orchestration, streaming, or cloud resources.
+Not implemented now: data cleaning, a typed production ingestion pipeline, database design or ingestion, production feature engineering, modelling, threshold selection, model persistence, API, dashboard, Docker, CI, orchestration, event streaming, or cloud resources.
