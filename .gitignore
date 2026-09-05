@@ -1,0 +1,28 @@
+# Python environments and generated files
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Local configuration and editor state
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+
+# Transaction data and generated artifacts
+data/raw/
+data/interim/
+data/processed/
+artifacts/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
