@@ -2,9 +2,9 @@
 
 TransactionShield is a portfolio project for building an explainable, production-style transaction risk decisioning system. It is deliberately structured as a software and data product rather than as a single fraud-classification notebook.
 
-## Current status: Stage 3 contract design only
+## Current status: Stage 4B local canonical pipeline
 
-Stage 1 established the project contract and repository conventions. Stage 2 acquired and audited the canonical artifact. Stage 3 adds only design contracts:
+Stage 1 established the project contract and repository conventions. Stage 2 acquired and audited the canonical artifact. Stage 3 froze these design contracts:
 
 - a frozen lossless canonical PostgreSQL schema design derived from verified source representation;
 - the transfer-only scoring-population contract;
@@ -13,7 +13,9 @@ Stage 1 established the project contract and repository conventions. Stage 2 acq
 - a reproducible per-step transfer summary and frozen temporal evaluation contract; and
 - lightweight, tested eligibility, lineage-identity, representation, and summary utilities.
 
-The executable scope is limited to CSV validation/iteration, streaming audit, and Stage 3 contract inspection utilities. The PostgreSQL file is unexecuted design DDL. An authoritative raw CSV exists only in the Git-ignored local `data/raw/` directory and is not part of the repository. There is no production ingestion or feature pipeline, fitted model, installed database, API, dashboard, Docker configuration, CI workflow, or cloud infrastructure.
+Stage 4B implements strict, streaming canonical ingestion, artifact verification before and during processing, lossless typed records, deterministic CSV materialisation, read-back reconciliation, and completed-run manifests. All transaction types, source labels, and post-balances are retained for canonical reconciliation; this output is not a model feature dataset. The earlier inspection utilities remain available and retain their documented behaviour.
+
+The PostgreSQL file remains unexecuted design DDL. The authoritative raw CSV and transaction-level generated outputs exist only in Git-ignored local data directories. No point-in-time features, historical means, fitted model, database integration, API, dashboard, Docker configuration, CI workflow, or cloud infrastructure have been implemented. Stage 4C has not begun.
 
 The verified primary artifact is `synthetic_mobile_money_transaction_dataset.csv` from **Version 2 of the Mendeley Data repository**, DOI [`10.17632/zhj366m53p.2`](https://doi.org/10.17632/zhj366m53p.2). Its independently calculated row, class, transaction-type, and schema results identify it as **dataset version 1 defined by the 2025 Data in Brief paper**. These are separate version concepts. See [the original paper](https://doi.org/10.1016/j.dib.2025.111534), [provenance record](docs/data-provenance.md), and [dataset decision](docs/dataset-decision.md).
 
@@ -23,7 +25,7 @@ The verified primary artifact is `synthetic_mobile_money_transaction_dataset.csv
 TransactionShield/
 |-- data/                         # Local data policy; raw/generated data are ignored
 |-- docs/
-|   |-- architecture.md          # Planned system and Stage 1 boundary
+|   |-- architecture.md          # Current local pipeline and planned system
 |   |-- canonical-data-model.md  # Verified representation and approved SQL types
 |   |-- data-dictionary.md       # Verified schema, meanings, and availability
 |   |-- data-provenance.md       # Source, acquisition, checksum, and identity
@@ -32,6 +34,7 @@ TransactionShield/
 |   |-- leakage-audit.md         # Feature disposition and temporal safeguards
 |   |-- model-contract.md        # Population, feature tiers, and leakage rules
 |   |-- project-specification.md # Business problem, metrics, and scope
+|   |-- stage4b-canonical-pipeline.md # Canonical runbook and format contract
 |   |-- temporal-evaluation-contract.md # Stability, split, and metrics
 |   `-- transfer-step-summary.csv        # Reproducible eligible-population counts
 |-- sql/
@@ -39,12 +42,18 @@ TransactionShield/
 |-- src/transactionshield/
 |   |-- __init__.py
 |   |-- audit.py                 # Streaming integrity and quality audit
+|   |-- canonical.py             # Strict typed canonical parsing
 |   |-- contracts.py             # Stage 3 contract inspection and rules
-|   `-- ingestion.py             # Header validation and lazy CSV row iteration
+|   |-- ingestion.py             # Compatible permissive inspection utilities
+|   |-- materialisation.py       # Deterministic serialisation and read-back
+|   |-- pipeline.py              # Canonical orchestration and CLI
+|   `-- validation.py            # Approved artifact gate and reconciliation
 |-- tests/
 |   |-- test_audit.py
+|   |-- test_canonical.py
 |   |-- test_contracts.py
-|   `-- test_ingestion.py
+|   |-- test_ingestion.py
+|   `-- test_pipeline.py
 |-- .gitignore
 |-- LICENSE
 |-- pyproject.toml
@@ -62,7 +71,18 @@ python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
-The code implemented through Stage 3 uses only the Python standard library. `pytest` is a development dependency used by the test suite.
+The code implemented through Stage 4B uses only the Python standard library. `pytest` is a development dependency used by the test suite.
+
+## Run the canonical pipeline
+
+After the development setup above and the documented source acquisition:
+
+```powershell
+python -m transactionshield.pipeline data/raw/synthetic_mobile_money_transaction_dataset.csv `
+  --output-directory data/interim/canonical/stage4b
+```
+
+The equivalent installed command is `transactionshield-canonical`. The output directory must be new and beneath `data/interim/` or `data/processed/`. A successful run contains `canonical.csv` and `manifest.json`; existing runs are never overwritten. See the [Stage 4B runbook](docs/stage4b-canonical-pipeline.md) for integrity gates, exact serialisation, failures, and deterministic reruns.
 
 ## Stage 1 environment snapshot
 
@@ -91,6 +111,7 @@ TransactionShield's own source code and original project documentation are avail
 - [Dataset decision](docs/dataset-decision.md)
 - [Architecture](docs/architecture.md)
 - [Canonical data model](docs/canonical-data-model.md)
+- [Stage 4B canonical pipeline](docs/stage4b-canonical-pipeline.md)
 - [Data provenance and acquisition](docs/data-provenance.md)
 - [Verified data dictionary](docs/data-dictionary.md)
 - [Data-quality audit](docs/data-quality-audit.md)

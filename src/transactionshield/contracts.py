@@ -17,6 +17,7 @@ from uuid import UUID, uuid5
 from transactionshield.ingestion import iter_csv_rows
 
 PRIMARY_MODEL_TRANSACTION_TYPE = "TRANSFER"
+TRANSACTION_TYPES = ("DEBIT", "DEPOSIT", "PAYMENT", "TRANSFER", "WITHDRAWAL")
 TRANSACTION_ID_NAMESPACE = UUID("e42d9db1-0152-5973-b3b0-6df189dc50e4")
 NUMERIC_CONTRACT_COLUMNS = (
     "amount",
@@ -86,12 +87,32 @@ def deterministic_transaction_id(
 
     if re.fullmatch(r"[0-9a-f]{64}", artifact_sha256) is None:
         raise ValueError("artifact_sha256 must be 64 lowercase hexadecimal characters")
-    if source_row_number < 2:
-        raise ValueError("source_row_number must count the header as row 1")
+    validate_source_row_number(source_row_number)
     return uuid5(
         TRANSACTION_ID_NAMESPACE,
         f"{artifact_sha256}:{source_row_number}",
     )
+
+
+def validate_source_row_number(source_row_number: int) -> None:
+    """Require a genuine integer representable by the canonical BIGINT column."""
+
+    if type(source_row_number) is not int or not 2 <= source_row_number <= 2**63 - 1:
+        raise ValueError("source_row_number must be an integer from 2 through 2**63-1")
+
+
+def parse_plain_decimal(raw_value: str) -> Decimal:
+    """Parse the frozen plain-decimal source grammar without float or rounding."""
+
+    if not isinstance(raw_value, str) or _PLAIN_DECIMAL.fullmatch(raw_value) is None:
+        raise ValueError(f"Value is not a plain decimal literal: {raw_value!r}")
+    try:
+        number = Decimal(raw_value)
+    except InvalidOperation as error:
+        raise ValueError(f"Invalid decimal value: {raw_value!r}") from error
+    if not number.is_finite():
+        raise ValueError(f"Non-finite decimal value: {raw_value!r}")
+    return number
 
 
 def _step_summaries(
@@ -138,14 +159,9 @@ def _new_numeric_state() -> dict[str, Any]:
 
 
 def _update_numeric_state(state: dict[str, Any], raw_value: str) -> None:
+    number = parse_plain_decimal(raw_value)
     match = _PLAIN_DECIMAL.fullmatch(raw_value)
-    if match is None:
-        raise ValueError(f"Value is not a plain decimal literal: {raw_value!r}")
-
-    try:
-        number = Decimal(raw_value)
-    except InvalidOperation as error:
-        raise ValueError(f"Invalid decimal value: {raw_value!r}") from error
+    assert match is not None
 
     integer_part = match.group("integer").lstrip("0") or "0"
     fraction_part = match.group("fraction") or ""

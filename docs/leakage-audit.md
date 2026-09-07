@@ -42,8 +42,8 @@ Every fraud label occurs in `TRANSFER`. Transfers have 175,518 fraud rows out of
 
 Controls for later modelling:
 
-- report performance by transaction type;
-- compare models with and without `transactionType`;
+- report the primary model's performance on transfers only; other types remain an operational/data-quality reporting population, not scored examples;
+- exclude `transactionType` as a direct primary-model feature because it is constant within the frozen transfer-only population; the earlier suggestion to compare models with and without type does not apply to this model;
 - never claim detection coverage for types with no positive examples; and
 - use the Stage 3 primary population contract, which scores transfers only while preserving all transaction types in the data layer.
 
