@@ -103,3 +103,19 @@ For outgoing count/sum/max, aggregate current-step values first, then use a wind
 Distinct-counterparty histories require a first-seen relation: calculate `MIN(step)` for each `(initiator, recipient)` pair, count newly observed counterparties by entity and first-seen step, then cumulatively sum through `1 PRECEDING`. Summing per-step distinct counts directly is forbidden because it double-counts counterparties seen in multiple steps.
 
 Because each window operates after collapsing an entity's activity to one row per step and excludes the current per-step row, CSV row order and technical IDs cannot leak information between transactions in the same step. Missing prior state is represented by zero for counts/totals and null for undefined means/maxima; the model preprocessing contract must distinguish those cases explicitly.
+
+## Stage 4C implementation and approved mean arithmetic
+
+The feature definitions above are implemented by the local `features.py` engine.
+Its pending entity/step aggregates are merged only on advancement to a later
+step, or successful end of input. This is the streaming equivalent of the
+exclusive cumulative-window contract, not a change to it. All valid canonical
+transaction types feed history; the transfer rule filters output only.
+
+Source monetary values and historical totals remain exact `Decimal` values.
+For historical means only, Stage 4C freezes **28 significant decimal digits**
+with **ROUND_HALF_EVEN**, using an explicit local `decimal.Context` on every
+division. No ambient process precision, binary float, quantisation or learned
+imputation is used. A zero historical count yields `None` for mean and maximum;
+counts and totals remain zero. Final persistent feature serialisation is deferred
+to Stage 4E. See the [implementation runbook](stage4c-feature-engine.md).

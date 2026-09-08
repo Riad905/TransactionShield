@@ -18,6 +18,7 @@ from transactionshield.ingestion import iter_csv_rows
 
 PRIMARY_MODEL_TRANSACTION_TYPE = "TRANSFER"
 TRANSACTION_TYPES = ("DEBIT", "DEPOSIT", "PAYMENT", "TRANSFER", "WITHDRAWAL")
+EVALUATION_WINDOWS = (("train", 0, 95), ("validation", 96, 119), ("test", 120, 143))
 TRANSACTION_ID_NAMESPACE = UUID("e42d9db1-0152-5973-b3b0-6df189dc50e4")
 NUMERIC_CONTRACT_COLUMNS = (
     "amount",
@@ -62,6 +63,17 @@ def is_primary_model_eligible(transaction_type: str) -> bool:
     """Return whether a source transaction belongs to the primary population."""
 
     return transaction_type == PRIMARY_MODEL_TRANSACTION_TYPE
+
+
+def evaluation_partition(step: int) -> str:
+    """Assign frozen evaluation metadata; this does not govern history updates."""
+
+    if type(step) is not int:
+        raise ValueError("evaluation step must be an integer")
+    for name, start, end in EVALUATION_WINDOWS:
+        if start <= step <= end:
+            return name
+    raise ValueError(f"step {step} is outside the frozen evaluation horizon")
 
 
 def iter_primary_model_rows(

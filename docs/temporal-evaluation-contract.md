@@ -68,3 +68,13 @@ Secondary evaluation:
 The transfer subset has moderate class imbalance: 30.828977% fraud and 69.171023% legitimate. Accuracy is not the headline metric because operational fraud decisions have asymmetric false-positive and false-negative consequences, and useful performance depends on the threshold-specific precision, recall, alert-volume, and intervention trade-offs. Accuracy alone does not express those consequences.
 
 Probability estimation and threshold selection are separate contracts. A training-fitted model estimates or ranks risk; an operational threshold converts that score into an action under review-capacity, precision, recall, and false-positive trade-offs. Thresholds must be selected using validation data only and declared scenarios, then frozen before the final test evaluation.
+
+## Stage 4C continuity check
+
+The implemented history engine does not receive a partition label and has no
+partition-reset operation. Its only temporal boundary is completion of a whole
+`step`. Validation acceptance counts apply the frozen windows to emitted transfer
+metadata outside the predictor object. Tests verify continuity at 95 to 96 and
+119 to 120, including unlabelled activity from earlier holdout steps. Stage 4C
+does not fit preprocessing/models, tune thresholds, evaluate fraud performance,
+or create final train/validation/test feature files.
