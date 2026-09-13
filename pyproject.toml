@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "transactionshield"
 version = "0.1.0"
-description = "A production-style transaction risk decisioning portfolio project."
+description = "Leakage-safe fraud modelling and transaction data pipeline portfolio project."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -18,6 +18,8 @@ transactionshield-contract = "transactionshield.contracts:main"
 transactionshield-canonical = "transactionshield.pipeline:main"
 
 [project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.2,<4"]
+modelling = ["scikit-learn==1.8.0", "numpy==2.3.5", "scipy==1.17.0", "joblib==1.5.3", "threadpoolctl==3.6.0"]
 dev = [
     "pytest>=8,<10",
 ]
@@ -29,3 +31,4 @@ where = ["src"]
 addopts = "-ra"
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = ["postgres: requires an explicitly configured disposable PostgreSQL test database"]

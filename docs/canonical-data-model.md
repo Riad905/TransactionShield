@@ -2,7 +2,7 @@
 
 ## Status and source contract
 
-This is the approved Stage 3 PostgreSQL schema design, not an installed or executed database. The canonical source is the checksum-verified `synthetic_mobile_money_transaction_dataset.csv` from Mendeley repository Version 2. Its SHA-256 is `da951eb95735da96271740a3e66b676b342d3831ce3111cd19dbfa020d3bd0a7`.
+The approved Stage 3 canonical design is unchanged. Stage 4D uses it as the first migration and adds separate feature tables and integrity constraints; no live PostgreSQL execution has yet been performed. See the [persistence runbook](stage4d-postgres.md). The canonical source is the checksum-verified `synthetic_mobile_money_transaction_dataset.csv` from Mendeley repository Version 2. Its SHA-256 is `da951eb95735da96271740a3e66b676b342d3831ce3111cd19dbfa020d3bd0a7`.
 
 The observed artifact is the source of truth: 1,720,181 rows and steps 0 through 143. The paper's separate 720-step configuration remains a documented limitation. All five transaction types and all source values, including negative balances and post-event fields, are retained in the canonical data layer.
 
@@ -78,4 +78,4 @@ The dataset-level `artifact_id` is likewise stable for a checksum-identified art
 
 ## Approved ingestion failure behaviour
 
-The future ingestion layer must validate source values before inserting canonical rows. Invalid plain-decimal values, non-positive amounts, empty IDs, unexpected transaction types or labels, invalid steps, and deterministic-identity conflicts must be rejected and reported with source-row and column context. It must not trim malformed identifiers into validity, clip or replace negative balances, round source decimals, substitute defaults, or silently discard invalid rows. A failed canonical load must leave an auditable failure result rather than a partially accepted dataset presented as complete.
+The Stage 4B parser validates source values before Stage 4D inserts canonical rows. Invalid plain-decimal values, non-positive amounts, empty IDs, unexpected transaction types or labels, invalid steps, and deterministic-identity conflicts must be rejected, not silently repaired. The parser retains row/column context. The database CLI deliberately suppresses raw exception details that might expose credentials or source values. A failed database load requests rollback and prints a failure result; no completion record is published. No durable database failure ledger is implemented.
