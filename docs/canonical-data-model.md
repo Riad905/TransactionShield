@@ -2,7 +2,7 @@
 
 ## Status and source contract
 
-The approved Stage 3 canonical design is unchanged. Stage 4D uses it as the first migration and adds separate feature tables and integrity constraints; no live PostgreSQL execution has yet been performed. See the [persistence runbook](stage4d-postgres.md). The canonical source is the checksum-verified `synthetic_mobile_money_transaction_dataset.csv` from Mendeley repository Version 2. Its SHA-256 is `da951eb95735da96271740a3e66b676b342d3831ce3111cd19dbfa020d3bd0a7`.
+The approved Stage 3 canonical design is unchanged. Stage 4D uses it as the first migration and adds separate feature tables and integrity constraints. Five genuine PostgreSQL integration tests are verified in CI on small fixtures; the full-data database load remains unperformed. See the [persistence runbook](stage4d-postgres.md) and [CI evidence](portfolio-finalisation.md). The canonical source is the checksum-verified `synthetic_mobile_money_transaction_dataset.csv` from Mendeley repository Version 2. Its SHA-256 is `da951eb95735da96271740a3e66b676b342d3831ce3111cd19dbfa020d3bd0a7`.
 
 The observed artifact is the source of truth: 1,720,181 rows and steps 0 through 143. The paper's separate 720-step configuration remains a documented limitation. All five transaction types and all source values, including negative balances and post-event fields, are retained in the canonical data layer.
 

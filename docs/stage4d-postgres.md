@@ -2,13 +2,13 @@
 
 ## Status
 
-Finalisation now provides an Ubuntu/PostgreSQL service workflow. See the
-[current CI evidence and reproduction record](portfolio-finalisation.md) for
-observed execution status. The local-environment findings below are historical;
-full-artifact database acceptance remains pending independently of fixture CI.
+**All five genuine PostgreSQL integration tests are verified in CI** against
+the Ubuntu/PostgreSQL 17 service. See the [observed run evidence](portfolio-finalisation.md).
+No SQL defects or test changes were needed. Full-artifact database acceptance
+remains pending: the 1,720,181-row PostgreSQL load has not been performed.
 
-The persistence code and local contract tests are implemented. **Real PostgreSQL
-integration and full-data database acceptance have NOT RUN.** On 2026-09-11 the
+The local-environment findings are historical. Before CI verification on
+2026-09-13, real PostgreSQL integration had not run. On 2026-09-11 the
 environment still had no PostgreSQL server, service, default-port listener, client
 tools or Docker executable/service. Psycopg 3.3.5 and its binary extra were installed
 in the ignored project virtual environment; no database server was installed.
@@ -145,7 +145,8 @@ explicitly. Do not paste it into logs, documentation or tracked files. CLI failu
 print a generic message rather than driver diagnostics that could include secrets
 or transaction values. Library callers must also avoid logging raw driver errors.
 SQL files are resolved from the repository: a standalone wheel deployment is not
-supported or claimed. These commands have not been run against a live database.
+supported or claimed. The schema and loader functions ran on small CI fixtures;
+the CLI commands above have not been used for a full-data database load.
 
 ## What is tested
 
@@ -181,7 +182,8 @@ all 21 project Python files compiled; tracked and new-file whitespace checks
 passed. One earlier run hit Windows access-denied on a temporary-directory rename
 in an unchanged Stage 4B test. That test passed on an isolated rerun, followed by
 a passing full suite; no Stage 4B code was changed. The exact filesystem-lock
-cause was not established. Live PostgreSQL tests remain NOT RUN.
+cause was not established. Live PostgreSQL tests had not run at that historical
+checkpoint; all five were subsequently verified in CI on 2026-09-13.
 
 The implementation stays in one explicit module with two small state holders
 (batch buffers and diagnostic counters), two SQL files and focused tests. No

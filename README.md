@@ -2,7 +2,7 @@
 
 TransactionShield is a Python portfolio project that validates **1,720,181 synthetic mobile-money transactions**, constructs leakage-safe historical features, implements atomic PostgreSQL persistence, and evaluates fixed fraud models chronologically. Exact Decimal arithmetic, checksum-verified replay and automated tests make the data path auditable. Models show only modest ranking gains; the six-day synthetic dataset cannot establish real-world fraud prevention.
 
-The project includes **209 ordinary tests and five real PostgreSQL integration tests**. GitHub Actions runs the full suite against a disposable PostgreSQL service; local runs skip those five tests without a server. See [CI and reproduction](docs/portfolio-finalisation.md) for the observed verification status, not just workflow configuration.
+The project includes **209 ordinary tests and five real PostgreSQL integration tests verified in CI**. The [observed green run](https://github.com/Riad905/TransactionShield/actions/runs/34757283878) executed the full suite against PostgreSQL 17 and passed the explicit five-tests/no-skips check. Local runs still skip those five tests without a server. See [CI and reproduction](docs/portfolio-finalisation.md) for evidence and limits.
 
 ## Modelling results: useful evidence, limited discrimination
 
@@ -63,7 +63,7 @@ Stage 4B implements strict, streaming canonical ingestion, artifact verification
 
 Stage 4C implements the nine approved Core features and the separate two-field Platform-State Enhanced extension through a strict unlabelled behavioural interface. A two-phase replay isolates every current step from committed historical state. Source amounts and historical totals remain exact Decimal values; historical means use an explicit local 28-significant-digit HALF_EVEN context. All transaction types update history, but only transfers emit examples. Adversarial tests and streaming full-artifact validation check correctness without publishing a feature dataset.
 
-Stage 4D adds explicit PostgreSQL migrations and a batched loader with source validation, read-back checks and atomic completion. Core predictors, Enhanced balances and feature metadata are stored separately. Psycopg is installed in the project environment, but **live PostgreSQL integration and full-data database loading have NOT RUN** because no local server or Docker environment was available. This is not a deployed database.
+Stage 4D adds explicit PostgreSQL migrations and a batched loader with source validation, read-back checks and atomic completion. Core predictors, Enhanced balances and feature metadata are stored separately. **Five genuine PostgreSQL integration tests are verified in CI on small fixtures; the full 1,720,181-row database load has NOT RUN.** No local database server was installed, and this is not a deployed database.
 
 Stage 4E fits the five predeclared experiments above from verified in-memory features. Finalisation adds fixed-budget descriptive ranking analysis and PostgreSQL CI. The authoritative raw CSV and transaction-level generated outputs remain in Git-ignored local directories. No final feature-file format, saved model-serving bundle, API, dashboard, local Docker environment or cloud deployment is implemented. Synchronous pre-balance availability remains an unproven deployment assumption for the Enhanced tier.
 
@@ -86,7 +86,7 @@ TransactionShield/
 |   |-- project-specification.md # Business problem, metrics, and scope
 |   |-- stage4b-canonical-pipeline.md # Canonical runbook and format contract
 |   |-- stage4c-feature-engine.md # Point-in-time mechanism and validation runbook
-|   |-- stage4d-postgres.md       # Persistence design and unexecuted live-test runbook
+|   |-- stage4d-postgres.md       # Persistence design, verified CI and load runbook
 |   |-- stage4e-modelling.md      # Frozen experiment and honest limitations
 |   |-- stage4e-results.json      # Lightweight aggregate metrics, no raw rows
 |   |-- portfolio-finalisation.md # Ranking, replay evidence and CI/reproduction
@@ -165,8 +165,9 @@ This writes only a small structural acceptance summary to a new ignored report f
 ## PostgreSQL persistence status
 
 For Stage 4D setup, schema/load commands and opt-in real-database tests, see the
-[PostgreSQL runbook](docs/stage4d-postgres.md). Only the Python driver was installed;
-no database server was installed, and skipped integration tests are not counted as passes.
+[PostgreSQL runbook](docs/stage4d-postgres.md). All five real integration tests
+passed against PostgreSQL in CI. No local server or full-data database load was
+performed; local skips are not counted as passes.
 
 ## Stage 1 environment snapshot
 

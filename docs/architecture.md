@@ -1,6 +1,6 @@
 # Planned architecture
 
-The diagram distinguishes verified local ingestion/features/modelling (green), Stage 4D persistence code awaiting live database tests (amber), and unimplemented work (grey). The authoritative source is not stored in Git. No PostgreSQL server has been installed or used for acceptance testing here.
+The diagram distinguishes verified local ingestion/features/modelling and CI-tested persistence (green) from unimplemented work (grey). Five genuine PostgreSQL integration tests passed on a disposable CI service; the full-data database load remains unperformed. The authoritative source is not stored in Git and no local PostgreSQL server was installed. See [CI evidence](portfolio-finalisation.md).
 
 ```mermaid
 flowchart LR
@@ -8,8 +8,8 @@ flowchart LR
     B[Ingestion<br/>strict streaming typed records]
     V[Validation<br/>source hash, schema, semantics]
     L[Local canonical CSV<br/>read-back reconciliation and manifest]
-    C[(PostgreSQL<br/>planned)]
-    P[PostgreSQL persistence code<br/>live tests pending]
+    C[(Full-data PostgreSQL load<br/>not performed)]
+    P[PostgreSQL persistence code<br/>five CI integration tests verified]
     D[Point-in-time feature engine<br/>completed-step replay]
     M[Persistent feature files<br/>not implemented]
     E[Offline model comparison<br/>chronological evaluation]
@@ -29,11 +29,9 @@ flowchart LR
     classDef implemented fill:#d1fae5,stroke:#047857,color:#064e3b;
     classDef future fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray: 5 5;
     classDef external fill:#dbeafe,stroke:#2563eb,color:#1e3a8a;
-    classDef pending fill:#fef3c7,stroke:#b45309,color:#78350f;
-    class B,V,L,D,E implemented;
+    class B,V,L,D,E,P implemented;
     class C,M,F,G,H future;
     class A external;
-    class P pending;
 ```
 
 ## Component responsibilities
@@ -44,7 +42,7 @@ flowchart LR
 | Ingestion | Read the CSV lazily and expose records without silently transforming values. | Strict canonical parser plus compatible inspection utilities |
 | Validation | Enforce the artifact, structural and semantic contracts; reconcile input and output. | Implemented for local canonical runs |
 | Local canonical output | Preserve every transaction and source monetary lexeme with deterministic identity, field order and lineage. | Verified CSV and deterministic completed-run manifest; ignored by Git |
-| PostgreSQL | Store canonical transactions, separate predictor tiers, lineage and verified-load records. | Migrations and loader implemented; local contract tests only; live integration NOT RUN |
+| PostgreSQL | Store canonical transactions, separate predictor tiers, lineage and verified-load records. | Five real integration tests verified in CI; full-data database load not performed |
 | Feature pipeline | Build features using only information available at each decision time; eventually share definitions with online scoring. | In-memory Core/Enhanced replay implemented; final feature files and serving integration remain planned |
 | Model | Compare fixed models using chronological partitions and validation-only selection. | Five experiments evaluated; no calibration fit or model-serving bundle |
 | Version and decision layer | Bind model, schema, features, metrics, threshold, and provenance; route a score to an action. | Planned |
@@ -53,7 +51,7 @@ flowchart LR
 
 ## Initial design decisions
 
-- **Batch first, local first:** Stage 4B builds canonical local output; 4C implements point-in-time features; 4D adds PostgreSQL persistence code (live acceptance pending). The September 11 request expands 4E to offline modelling from contract-verified in-memory features. The canonical schema, feature definitions and storage target remain unchanged.
+- **Batch first, local first:** Stage 4B builds canonical local output; 4C implements point-in-time features; 4D adds PostgreSQL persistence (fixture integration verified in CI; full-data load pending). The September 11 request expands 4E to offline modelling from contract-verified in-memory features. The canonical schema, feature definitions and storage target remain unchanged.
 - **Contract before transformation:** reject missing or duplicate required columns rather than guessing or silently filling them.
 - **Raw data is immutable and local:** the repository stores instructions and provenance, not source transactions.
 - **Point-in-time correctness:** post-transaction balances and future history are not automatically valid inference features.
@@ -76,8 +74,9 @@ Stage 4D reuses that same canonical parser and feature adapter, rather than
 reimplementing history in SQL. One database transaction encloses batched writes,
 source guard exit, reconciliation and server-cursor read-back. The final completion
 row is inserted only after these checks; failures request rollback. Existing
-loads are verified without overwrite. These behaviours have unit tests; actual
-PostgreSQL execution remains unverified. See the [runbook](stage4d-postgres.md).
+loads are verified without overwrite. These behaviours have unit tests and five
+genuine PostgreSQL integration tests verified in CI. Full-data loading remains
+unperformed. See the [runbook](stage4d-postgres.md).
 
 Stage 4E generates exact features through the existing parser/engine and verifies
 their approved hashes before an explicit estimator-only float64 conversion.

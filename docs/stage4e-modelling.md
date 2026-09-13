@@ -13,7 +13,8 @@ Earlier documents used that name for final feature materialisation. This work
 generates the approved features in memory for estimators; it does not introduce
 a second feature definition or a new canonical file format.
 
-PostgreSQL acceptance remains **NOT RUN**: no server or Docker was available.
+Full-data PostgreSQL acceptance remains **NOT RUN**. Five small-fixture database
+integration tests were subsequently verified in CI; no local server was installed.
 The experiment therefore uses the independently verified local source and Stage
 4C engine, not an unverified database export. A fresh pre-modelling replay passed
 in 95.157 seconds: 1,720,181 source rows, 569,328 transfers, exact frozen splits,
@@ -202,8 +203,9 @@ The data are synthetic and span only six days. Strong held-out results can refle
 simulator rules, not generalisation to real fraud, drift or seasonality. Enhanced
 pre-balances still require an unproven synchronous deployment capability.
 No financial-loss reduction, real-time prevention, production reliability or
-production deployment is claimed. PostgreSQL numeric round trips, full-data
-database load, SQL plans, storage size and database performance remain unverified.
+production deployment is claimed. PostgreSQL numeric round trips are verified
+on CI fixtures; the full-data database load, SQL plans, storage size and database
+performance remain unverified.
 
 References: [sklearn histogram boosting](https://scikit-learn.org/1.8/modules/generated/sklearn.ensemble.HistGradientBoostingClassifier.html),
 [precision-recall thresholds](https://scikit-learn.org/1.8/modules/generated/sklearn.metrics.precision_recall_curve.html),

@@ -3,9 +3,15 @@
 ## Verification status
 
 Local verification: **209 passed, five PostgreSQL skips (214 collected)**.
-All 25 Python files compiled. No local PostgreSQL server was installed. CI is
-configured below; its result is pending observation after push. Configuration
-alone is not verification. No full 1,720,181-row PostgreSQL load has been performed.
+All 25 Python files compiled. No local PostgreSQL server was installed.
+**The five genuine PostgreSQL integration tests are VERIFIED IN CI.** On
+2026-09-13, [run 34757283878](https://github.com/Riad905/TransactionShield/actions/runs/34757283878)
+for commit `0c6574578ea904de1c41c881ce297ca7fa769685` completed successfully.
+The [test job](https://github.com/Riad905/TransactionShield/actions/runs/34757283878/job/103723733491)
+passed ordinary tests, the full 214-case suite, the explicit check requiring all
+five database cases and zero skips, and compile/whitespace checks. Run and step
+conclusions were observed through GitHub's read-only API; no SQL or test changes
+were needed. **No full 1,720,181-row PostgreSQL load has been performed.**
 
 The existing Stage 4D/4E implementation was recovered, not redesigned. Frozen
 canonical/feature contracts, model families, hyperparameters, validation selection
